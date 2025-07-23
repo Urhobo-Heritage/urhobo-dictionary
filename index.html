@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .main-container {
+      flex-grow: 1;
+      background-color: #ffffff;
+      background-image: url('https://ia600904.us.archive.org/35/items/urhobo-heritage-logo/Urhobo%20Heritage%20Logo.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      background-blend-mode: overlay;
+      color: #1f2937;
+    }
+    .header {
+      background-color: #02a95c;
+      color: #ffffff;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      border-bottom-left-radius: 1rem;
+      border-bottom-right-radius: 1rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .footer {
+      background-color: #8c6c43;
+      color: #ffffff;
+      padding: 2rem 1rem;
+      text-align: center;
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+      margin-top: auto;
+      box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .search-container {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    #suggestions-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    #suggestions-list div {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+    }
+    #suggestions-list div:last-child {
+      border-bottom: none;
+    }
+    #suggestions-list div:hover, #suggestions-list div:focus {
+      background-color: #f0f0f0;
+    }
+    .entry-display {
+      background-color: #ffffff;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin: 2rem auto;
+      max-width: 800px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+    .audio-button {
+      background-color: #51701f;
+      color: #ffffff;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+    }
+    .audio-button:hover {
+      background-color: #02a95c;
+    }
+    .star-rating {
+      display: inline-block;
+    }
+    .star-rating .star {
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: #ccc;
+      transition: color 0.2s ease;
+    }
+    .star-rating .star:hover, .star-rating .star.hovered {
+      color: #ffd700; /* Gold on hover for better UX */
+    }
+    .star-rating .star.selected {
+      color: #ffc107;
+    }
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .action-button {
+      background-color: #02a95c;
+      color: #ffffff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .action-button:hover {
+      background-color: #51701f;
+      transform: translateY(-2px);
+    }
+    .action-button:active {
+      transform: translateY(0);
+    }
+    .footer-section {
+      margin-bottom: 1.5rem;
+    }
+    .footer-section h3 {
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: #ffffff;
+    }
+    .footer-section p, .footer-section a {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #e0e0e0;
+    }
+    .footer-section a:hover {
+      color: #ffffff;
+    }
+    .message-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      display: none;
+      text-align: center;
+    }
+    .message-box button {
+      background-color: #02a95c;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    /* Responsive image */
+    .illustration-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <div class="message-box" id="messageBox" role="alert">
+    <p id="messageBoxText"></p>
+    <button onclick="document.getElementById('messageBox').style.display='none'" aria-label="Close message">OK</button>
+  </div>
+
+  <header class="header">
+    <h1 class="text-3xl font-bold mb-2">Urhobo-English Dictionary</h1>
+    <p class="text-lg font-medium">Preserving and Sharing My Urhobo Heritage</p>
+  </header>
+
+  <div class="main-container p-4">
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search Urhobo or English word..."
+             class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#02a95c]"
+             aria-label="Search dictionary" autocomplete="off">
+      <div id="suggestions-list" class="hidden" role="listbox"></div>
+    </div>
+
+    <div id="entryDisplay" class="entry-display" role="region" aria-live="polite">
+      <h2 id="entryUrhobo" class="text-3xl font-bold text-[#02a95c] mb-2"></h2>
+      <p id="entryPOS" class="text-gray-600 mb-4"></p>
+
+      <div class="mb-4">
+        <h3 class="text-xl font-semibold mb-2">Translation:</h3>
+        <p id="entryTranslation" class="text-lg"></p>
+      </div>
+
+      <div id="audioSection" class="mb-4 flex flex-wrap gap-4 items-center"></div>
+
+      <div id="illustrationSection" class="mb-4"></div>
+
+      <div id="examplesSection">
+        <h3 class="text-xl font-semibold mb-2">Examples:</h3>
+        <div id="example1" class="mb-2"></div>
+        <div id="example2"></div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-gray-200">
+        <h3 class="text-xl font-semibold mb-2">Rate this Entry:</h3>
+        <div id="ratingStars" class="star-rating" role="radiogroup" aria-label="Rate entry from 1 to 5 stars">
+          <span class="star" data-value="1" role="radio" aria-checked="false" tabindex="0">★</span>
+          <span class="star" data-value="2" role="radio" aria-checked="false" tabindex="-1">★</span>
+          <span class="star" data-value="3" role="radio" aria-checked="false" tabindex="-1">★</span>
+          <span class="star" data-value="4" role="radio" aria-checked="false" tabindex="-1">★</span>
+          <span class="star" data-value="5" role="radio" aria-checked="false" tabindex="-1">★</span>
+        </div>
+        <p id="currentRating" class="text-sm text-gray-500 mt-2">Current Average Rating: <span id="avgRatingValue">N/A</span></p>
+      </div>
+    </div>
+
+    <div class="button-group px-4 pb-8">
+      <a href="https://flutterwave.com/donate/gmdq9wcmzuf7" target="_blank" class="action-button" aria-label="Support the project">
+        💝 Support This Project
+      </a>
+      <a href="mailto:urhoboheritage23@gmail.com" class="action-button" aria-label="Submit feedback">
+        📝 Submit Feedback
+      </a>
+      <a href="https://www.choglobal.com.ng/ca/uh" target="_blank" class="action-button" aria-label="Book an Urhobo language class">
+        📝 Book an Urhobo Language Class
+      </a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+      <div class="footer-section">
+        <h3 class="text-xl">About This Dictionary</h3>
+        <p>Produced by: Urhobo Heritage</p>
+        <p>Lead Contributor & Editor-in-Chief: Abednego Oghenechovwiere Omashone</p>
+        <p>All materials in this dictionary are the intellectual properties of Abednego Oghenechovwiere Omashone. No part of it may be reproduced, repurposed, or transmitted in another medium without written permission.</p>
+      </div>
+      <div class="footer-section">
+        <h3 class="text-xl">Contact & Inquiries</h3>
+        <p>Email: <a href="mailto:urhoboheritage23@gmail.com">urhoboheritage23@gmail.com</a> | <a href="mailto:choglobalconcepts@gmail.com">choglobalconcepts@gmail.com</a></p>
+        <p>Phone/WhatsApp: +234 703 198 3620</p>
+        <p>This project is free. Voluntary donations for its sustenance and expansion are appreciated.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const APPS_SCRIPT_WEB_APP_URL = 'YOUR_DEPLOYED_APPS_SCRIPT_WEB_APP_URL'; // Paste your copied URL here
+    let sessionStartTime = Date.now();
+    let currentEntryUbiota = '';
+
+    function showMessageBox(message) {
+      const messageBoxText = document.getElementById('messageBoxText');
+      messageBoxText.textContent = message;
+      document.getElementById('messageBox').style.display = 'block';
+    }
+
+    async function sendRequest(action, params = {}, method = 'GET', body = null) {
+      const url = new URL(APPS_SCRIPT_WEB_APP_URL);
+      url.searchParams.append('action', action);
+
+      if (method === 'GET' && params) {
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+      }
+
+      const options = {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+      if (method === 'POST' && body) {
+        options.body = JSON.stringify(body);
+      } else if (method === 'POST' && params) { // If POST but using URL params for simplicity
+        const formData = new URLSearchParams();
+        Object.keys(params).forEach(key => formData.append(key, params[key]));
+        options.body = formData.toString();
+        options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+      }
+
+      try {
+        const response = await fetch(url.toString(), options);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error('Fetch error:', error);
+        showMessageBox('Network error or server issue: ' + error.message);
+        throw error; // Re-throw to be caught by the specific caller's .catch()
+      }
+    }
+
+    async function logInteraction(feature, details, status = 'Success', searchQuery = '') {
+      const sessionDuration = Math.floor((Date.now() - sessionStartTime) / 1000);
+      const userAgent = navigator.userAgent;
+
+      const interactionData = {
+        search_query: searchQuery,
+        feature: feature,
+        details: details,
+        session_duration: sessionDuration,
+        status: status,
+        user_agent: userAgent
+      };
+
+      try {
+        await sendRequest('logInteraction', {}, 'POST', interactionData);
+      } catch (error) {
+        console.error('Failed to log interaction:', error);
+      }
+    }
+
+    window.onload = function() {
+      sessionStartTime = Date.now();
+      logInteraction('Page Load', 'Dictionary app loaded');
+    };
+
+    const searchInput = document.getElementById('searchInput');
+    const suggestionsList = document.getElementById('suggestions-list');
+    const entryDisplay = document.getElementById('entryDisplay');
+
+    searchInput.addEventListener('input', async function() {
+      const query = this.value.trim();
+      if (query.length > 1) {
+        try {
+          const suggestions = await sendRequest('getSuggestions', { query: query });
+          displaySuggestions(suggestions);
+        } catch (error) {
+          console.error('Error getting suggestions:', error);
+        }
+      } else {
+        suggestionsList.innerHTML = '';
+        suggestionsList.classList.add('hidden');
+      }
+    });
+
+    function displaySuggestions(suggestions) {
+      suggestionsList.innerHTML = '';
+      if (suggestions.length > 0) {
+        suggestions.forEach((suggestion, index) => {
+          const div = document.createElement('div');
+          div.textContent = suggestion;
+          div.setAttribute('role', 'option');
+          div.setAttribute('aria-selected', 'false');
+          div.tabIndex = 0;
+          div.addEventListener('click', function() {
+            searchInput.value = suggestion;
+            searchEntry(suggestion);
+            suggestionsList.classList.add('hidden');
+            logInteraction('Suggestion Click', 'Selected: ' + suggestion, 'Success', suggestion);
+          });
+          div.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+              searchInput.value = suggestion;
+              searchEntry(suggestion);
+              suggestionsList.classList.add('hidden');
+              logInteraction('Suggestion Click', 'Selected: ' + suggestion, 'Success', suggestion);
+            }
+          });
+          suggestionsList.appendChild(div);
+        });
+        suggestionsList.classList.remove('hidden');
+        // Optionally focus the first suggestion:
+        // suggestionsList.querySelector('div').focus();
+      } else {
+        suggestionsList.classList.add('hidden');
+      }
+    }
+
+    document.addEventListener('click', function(event) {
+      if (!searchInput.contains(event.target) && !suggestionsList.contains(event.target)) {
+        suggestionsList.classList.add('hidden');
+      }
+    });
+
+    searchInput.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        const query = this.value.trim();
+        if (query) {
+          searchEntry(query);
+          suggestionsList.classList.add('hidden');
+        }
+      }
+    });
+
+    async function searchEntry(query) {
+      logInteraction('Search', 'Searching for: ' + query, 'Initiated', query);
+      try {
+        const entry = await sendRequest('searchDictionary', { query: query });
+        displayEntry(entry, query);
+      } catch (error) {
+        console.error('Error searching entry:', error);
+        entryDisplay.style.display = 'none';
+        showMessageBox(`Failed to retrieve entry for "${query}".`);
+        logInteraction('Search', `Failed to retrieve entry for: ${query}`, 'Failed', query);
+      }
+    }
+
+    function displayEntry(entry, query) {
+      if (entry) {
+        currentEntryUbiota = entry.ubiota;
+        document.getElementById('entryUrhobo').textContent = entry.ubiota;
+        document.getElementById('entryPOS').textContent = entry.pos ? `(${entry.pos})` : '';
+        document.getElementById('entryTranslation').textContent = entry.translation;
+
+        const audioSection = document.getElementById('audioSection');
+        audioSection.innerHTML = '';
+
+        const audioFields = [
+          { label: 'Ubiota Audio', url: entry.ubiotaAudio },
+          { label: 'Udje 1 Audio', url: entry.udje1Audio },
+          { label: 'Udje 2 Audio', url: entry.udje2Audio }
+        ];
+
+        audioFields.forEach(field => {
+          if (field.url) {
+            const button = document.createElement('button');
+            button.className = 'audio-button';
+            button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                    <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
+                                  </svg>
+                                  <span>${field.label}</span>`;
+            button.setAttribute('aria-label', `Play ${field.label} for ${entry.ubiota}`);
+            button.onclick = () => {
+              const audio = new Audio(field.url);
+              audio.play().catch(e => {
+                showMessageBox('Could not play audio. Please check the audio source.');
+                logInteraction('Audio Play Error', `Failed to play ${field.label} for ${entry.ubiota}`, 'Failed', entry.ubiota);
+              });
+              logInteraction('Audio Play', `Playing ${field.label} for ${entry.ubiota}`, 'Success', entry.ubiota);
+            };
+            audioSection.appendChild(button);
+          }
+        });
+
+        const illustrationSection = document.getElementById('illustrationSection');
+        illustrationSection.innerHTML = '';
+        if (entry.illustration) {
+          const img = document.createElement('img');
+          img.src = entry.illustration;
+          img.alt = `Illustration for ${entry.ubiota}`;
+          img.className = 'illustration-img';
+          img.onerror = () => {
+            img.src = 'https://placehold.co/300x200/cccccc/333333?text=No+Image';
+            logInteraction('Image Load Error', `Failed to load illustration for ${entry.ubiota}`, 'Failed', entry.ubiota);
+          };
+          illustrationSection.appendChild(img);
+        }
+
+        document.getElementById('example1').innerHTML = entry.udje1 ? `<p class="font-semibold">Example 1:</p><p>${entry.udje1}</p>` : '';
+        if (entry.example1) {
+          document.getElementById('example1').innerHTML += `<p class="text-sm text-gray-600">${entry.example1}</p>`;
+        }
+
+        document.getElementById('example2').innerHTML = entry.udje2 ? `<p class="font-semibold">Example 2:</p><p>${entry.udje2}</p>` : '';
+        if (entry.example2) {
+          document.getElementById('example2').innerHTML += `<p class="text-sm text-gray-600">${entry.example2}</p>`;
+        }
+
+        updateStarDisplay(entry.rateEntry);
+        document.getElementById('avgRatingValue').textContent = entry.rateEntry.toFixed(2);
+        entryDisplay.style.display = 'block';
+        logInteraction('Search', 'Entry displayed for: ' + entry.ubiota, 'Success', entry.ubiota);
+      } else {
+        entryDisplay.style.display = 'none';
+        showMessageBox(`No entry found for "${query}". Please try another word.`);
+        logInteraction('Search', `No entry found for: ${query}`, 'Failed', query);
+      }
+    }
+
+    const ratingStars = document.getElementById('ratingStars');
+    const stars = ratingStars.querySelectorAll('.star');
+
+    stars.forEach(star => {
+      star.addEventListener('mouseover', function() {
+        const value = parseInt(this.dataset.value);
+        stars.forEach((s, index) => {
+          s.classList.toggle('hovered', index < value);
+        });
+      });
+      star.addEventListener('mouseout', function() {
+        stars.forEach(s => s.classList.remove('hovered'));
+      });
+      star.addEventListener('click', async function() {
+        if (currentEntryUbiota) {
+          const rating = parseInt(this.dataset.value);
+          logInteraction('Rate Entry', `User rated ${currentEntryUbiota} with ${rating} stars`, 'Initiated', currentEntryUbiota);
+          try {
+            const result = await sendRequest('updateRating', { ubiota: currentEntryUbiota, rating: rating }, 'POST');
+            const newAvgRating = result.newAverage; // Assuming your Apps Script returns this
+            updateStarDisplay(newAvgRating);
+            document.getElementById('avgRatingValue').textContent = newAvgRating.toFixed(2);
+            showMessageBox(`Thank you for your rating! New average: ${newAvgRating.toFixed(2)}`);
+            logInteraction('Rate Entry', `Rating updated for ${currentEntryUbiota} to ${newAvgRating.toFixed(2)}`, 'Success', currentEntryUbiota);
+          } catch (error) {
+            console.error('Error updating rating:', error);
+            showMessageBox('Failed to update rating. Please try again.');
+            logInteraction('Rate Entry', `Failed to update rating for ${currentEntryUbiota}`, 'Failed', currentEntryUbiota);
+          }
+        }
+      });
+      star.addEventListener('keydown', async function(event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          if (currentEntryUbiota) {
+            const rating = parseInt(this.dataset.value);
+            logInteraction('Rate Entry', `User rated ${currentEntryUbiota} with ${rating} stars`, 'Initiated', currentEntryUbiota);
+            try {
+              const result = await sendRequest('updateRating', { ubiota: currentEntryUbiota, rating: rating }, 'POST');
+              const newAvgRating = result.newAverage;
+              updateStarDisplay(newAvgRating);
+              document.getElementById('avgRatingValue').textContent = newAvgRating.toFixed(2);
+              showMessageBox(`Thank you for your rating! New average: ${newAvgRating.toFixed(2)}`);
+              logInteraction('Rate Entry', `Rating updated for ${currentEntryUbiota} to ${newAvgRating.toFixed(2)}`, 'Success', currentEntryUbiota);
+            } catch (error) {
+              console.error('Error updating rating:', error);
+              showMessageBox('Failed to update rating. Please try again.');
+              logInteraction('Rate Entry', `Failed to update rating for ${currentEntryUbiota}`, 'Failed', currentEntryUbiota);
+            }
+          }
+        }
+      });
+    });
+
+    function updateStarDisplay(averageRating) {
+      stars.forEach((star, index) => {
+        star.classList.toggle('selected', index < Math.round(averageRating));
+        star.setAttribute('aria-checked', index < Math.round(averageRating) ? 'true' : 'false');
+      });
+    }
+  </script>
+</body>
+</html>

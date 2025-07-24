@@ -103,6 +103,13 @@
             <p>No results found for your search. Please try a different word.</p>
         </div>
 
+        <!-- Pagination Controls -->
+        <div id="paginationControls" class="flex justify-center items-center gap-4 mt-8 hidden">
+            <button id="prevPageBtn" class="bg-[#02a95c] hover:bg-[#03c06e] text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+            <span id="pageInfo" class="text-lg text-gray-700">Page 1 of 1</span>
+            <button id="nextPageBtn" class="bg-[#02a95c] hover:bg-[#03c06e] text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
+
         <!-- Footer Section -->
         <footer class="mt-12 p-8 bg-[#8c6c43] text-white rounded-lg shadow-lg">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm md:text-base">
@@ -125,6 +132,9 @@
     <script>
         // Placeholder for dictionary data - will be populated dynamically from CSV
         let dictionaryData = [];
+        let filteredData = []; // Data currently being displayed after search filtering
+        let currentPage = 1;
+        const itemsPerPage = 15; // Number of entries to display per page
         const CSV_FILE_URL = 'https://raw.githubusercontent.com/Urhobo-Heritage/urhobo-dictionary/refs/heads/main/Urhobo%20Dictionary%20Project1%20-%20Dictionary.csv'; // *** IMPORTANT: Replace with your actual raw GitHub CSV URL ***
 
         // Get references to DOM elements
@@ -132,6 +142,10 @@
         const resultsContainer = document.getElementById('resultsContainer');
         const noResultsMessage = document.getElementById('noResults');
         const loadingIndicator = document.getElementById('loadingIndicator');
+        const paginationControls = document.getElementById('paginationControls');
+        const prevPageBtn = document.getElementById('prevPageBtn');
+        const nextPageBtn = document.getElementById('nextPageBtn');
+        const pageInfo = document.getElementById('pageInfo');
         let sessionStartTime = Date.now(); // Records the start time of the user's session
 
         /**
@@ -181,22 +195,14 @@
         }
 
         /**
-         * Renders the dictionary entries into the results container based on the provided array.
-         * Creates HTML cards for each entry, including audio players and rating stars.
-         * @param {Array} entries - The array of dictionary entry objects to render.
+         * Renders a specific subset of dictionary entries into the results container.
+         * This function is used by `displayPaginatedResults`.
+         * @param {Array} entriesToRender - The array of dictionary entry objects for the current page.
          */
-        function renderResults(entries) {
+        function renderPageEntries(entriesToRender) {
             resultsContainer.innerHTML = ''; // Clear previous results before rendering new ones
 
-            // Show/hide no results message based on search outcome
-            if (entries.length === 0) {
-                noResultsMessage.classList.remove('hidden');
-                return; // Exit if no entries to render
-            } else {
-                noResultsMessage.classList.add('hidden');
-            }
-
-            entries.forEach(entry => {
+            entriesToRender.forEach(entry => {
                 const card = document.createElement('div');
                 card.className = 'bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 relative';
 
@@ -314,6 +320,35 @@
         }
 
         /**
+         * Manages and displays the dictionary entries with pagination.
+         * It slices the `filteredData` array based on the current page and items per page,
+         * then calls `renderPageEntries` to display them.
+         */
+        function displayPaginatedResults() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const entriesToDisplay = filteredData.slice(startIndex, endIndex);
+
+            renderPageEntries(entriesToDisplay);
+
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages || 1}`; // Handle case with 0 total pages
+
+            // Enable/disable pagination buttons
+            prevPageBtn.disabled = currentPage === 1;
+            nextPageBtn.disabled = currentPage === totalPages || filteredData.length === 0;
+
+            // Show/hide no results message
+            if (filteredData.length === 0) {
+                noResultsMessage.classList.remove('hidden');
+                paginationControls.classList.add('hidden'); // Hide pagination if no results
+            } else {
+                noResultsMessage.classList.add('hidden');
+                paginationControls.classList.remove('hidden'); // Show pagination if there are results
+            }
+        }
+
+        /**
          * Fetches and parses the CSV data from the specified URL.
          */
         async function fetchAndParseCSV() {
@@ -334,9 +369,11 @@
                     complete: function(results) {
                         // Filter out any rows where UBIOTA is empty or null, which might be blank rows from Excel
                         dictionaryData = results.data.filter(row => row.UBIOTA && row.UBIOTA.trim() !== '');
-                        renderResults(dictionaryData); // Render results with the fetched data
+                        filteredData = [...dictionaryData]; // Initialize filteredData with all data
+                        currentPage = 1; // Reset to first page
+                        displayPaginatedResults(); // Display the first page of results
                         loadingIndicator.classList.add('hidden'); // Hide loading indicator
-                        logInteraction('Page Load', 'Dictionary app loaded and CSV data fetched', '', 'Success');
+                        logInteraction('Data Load', 'Dictionary app loaded and CSV data fetched', '', 'Success');
                     },
                     error: function(err) {
                         console.error('Error parsing CSV:', err.message);
@@ -355,15 +392,34 @@
         searchInput.addEventListener('input', (event) => {
             const query = event.target.value.toLowerCase().trim(); // Get and sanitize the search query
             // Filter dictionary entries based on matching Urhobo word, translation, or examples
-            const filteredEntries = dictionaryData.filter(entry =>
+            filteredData = dictionaryData.filter(entry =>
                 entry.UBIOTA && entry.UBIOTA.toLowerCase().includes(query) ||
                 entry.TRANSLATION && entry.TRANSLATION.toLowerCase().includes(query) ||
                 (entry['EXAMPLE 1'] && entry['EXAMPLE 1'].toLowerCase().includes(query)) ||
                 (entry['EXAMPLE 2'] && entry['EXAMPLE 2'].toLowerCase().includes(query))
             );
-            renderResults(filteredEntries); // Render the filtered results
+            currentPage = 1; // Reset to the first page for new search results
+            displayPaginatedResults(); // Display the filtered and paginated results
             // Log the search interaction
-            logInteraction('Search', `Searching for: ${query}`, query, filteredEntries.length > 0 ? 'Success' : 'No Results');
+            logInteraction('Search', `Searching for: ${query}`, query, filteredData.length > 0 ? 'Success' : 'No Results');
+        });
+
+        // Event listeners for pagination buttons
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                displayPaginatedResults();
+                logInteraction('Pagination', `Moved to previous page: ${currentPage}`, searchInput.value);
+            }
+        });
+
+        nextPageBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayPaginatedResults();
+                logInteraction('Pagination', `Moved to next page: ${currentPage}`, searchInput.value);
+            }
         });
 
         // Initial fetch and render of all dictionary entries when the DOM content is fully loaded

@@ -1,562 +1,410 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <base target="_top">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="UTF-8">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f0f0f0;
-      color: #333;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .main-container {
-      flex-grow: 1;
-      background-color: #ffffff;
-      background-image: url('https://ia600904.us.archive.org/35/items/urhobo-heritage-logo/Urhobo%20Heritage%20Logo.png');
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: contain;
-      background-blend-mode: overlay;
-      color: #1f2937;
-    }
-    .header {
-      background-color: #02a95c;
-      color: #ffffff;
-      padding: 1.5rem 1rem;
-      text-align: center;
-      border-bottom-left-radius: 1rem;
-      border-bottom-right-radius: 1rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .footer {
-      background-color: #8c6c43;
-      color: #ffffff;
-      padding: 2rem 1rem;
-      text-align: center;
-      border-top-left-radius: 1rem;
-      border-top-right-radius: 1rem;
-      margin-top: auto;
-      box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .search-container {
-      position: relative;
-      width: 100%;
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-    #suggestions-list {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background-color: #ffffff;
-      border: 1px solid #ddd;
-      border-radius: 0.5rem;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      z-index: 10;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-    #suggestions-list div {
-      padding: 0.75rem 1rem;
-      cursor: pointer;
-      border-bottom: 1px solid #eee;
-    }
-    #suggestions-list div:last-child {
-      border-bottom: none;
-    }
-    #suggestions-list div:hover, #suggestions-list div:focus {
-      background-color: #f0f0f0;
-    }
-    .entry-display {
-      background-color: #ffffff;
-      border-radius: 1rem;
-      padding: 2rem;
-      margin: 2rem auto;
-      max-width: 800px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      display: none;
-    }
-    .audio-button {
-      background-color: #51701f;
-      color: #ffffff;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      border: none;
-    }
-    .audio-button:hover {
-      background-color: #02a95c;
-    }
-    .star-rating {
-      display: inline-block;
-    }
-    .star-rating .star {
-      cursor: pointer;
-      font-size: 1.5rem;
-      color: #ccc;
-      transition: color 0.2s ease;
-    }
-    .star-rating .star:hover, .star-rating .star.hovered {
-      color: #ffd700; /* Gold on hover for better UX */
-    }
-    .star-rating .star.selected {
-      color: #ffc107;
-    }
-    .button-group {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-    .action-button {
-      background-color: #02a95c;
-      color: #ffffff;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.75rem;
-      text-decoration: none;
-      font-weight: 600;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .action-button:hover {
-      background-color: #51701f;
-      transform: translateY(-2px);
-    }
-    .action-button:active {
-      transform: translateY(0);
-    }
-    .footer-section {
-      margin-bottom: 1.5rem;
-    }
-    .footer-section h3 {
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-      color: #ffffff;
-    }
-    .footer-section p, .footer-section a {
-      font-size: 0.9rem;
-      line-height: 1.5;
-      color: #e0e0e0;
-    }
-    .footer-section a:hover {
-      color: #ffffff;
-    }
-    .message-box {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
-      display: none;
-      text-align: center;
-    }
-    .message-box button {
-      background-color: #02a95c;
-      color: white;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    /* Responsive image */
-    .illustration-img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 0.5rem;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urhobo-English Dictionary</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons (stars, mail, book) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Apply Inter font and a fallback */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f0f0; /* Fallback background color */
+            background-image: linear-gradient(to bottom right, #e0f2f7, #c1e7f0); /* Light blue gradient for a fresh feel */
+        }
+        /* Styling for the subtle background logo pattern */
+        .bg-pattern {
+            background-image: url('https://ia600904.us.archive.org/35/items/urhobo-heritage-logo/Urhobo%20Heritage%20Logo.png');
+            background-repeat: repeat; /* Repeat the logo to create a pattern */
+            background-size: 200px; /* Control the size of individual logos in the pattern */
+            opacity: 0.05; /* Make the pattern very subtle */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Place behind other content */
+        }
+        /* Custom styles to hide the download button in HTML5 audio players */
+        audio::-webkit-media-controls-enclosure {
+            overflow: hidden; /* Hide overflow content */
+        }
+        audio::-webkit-media-controls-panel {
+            width: 100%; /* Ensure the control panel takes full width */
+        }
+        /* Keep essential audio controls visible */
+        audio::-webkit-media-controls-play-button,
+        audio::-webkit-media-controls-volume-slider,
+        audio::-webkit-media-controls-timeline,
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display {
+            display: flex !important;
+        }
+        /* Explicitly hide the download button */
+        audio::-webkit-media-controls-download-button,
+        audio::-webkit-media-controls-enclosure button[download] {
+            display: none !important;
+        }
+        /* Make audio player fill its container */
+        audio {
+            width: 100%;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
-  <div class="message-box" id="messageBox" role="alert">
-    <p id="messageBoxText"></p>
-    <button onclick="document.getElementById('messageBox').style.display='none'" aria-label="Close message">OK</button>
-  </div>
+<body class="min-h-screen text-gray-800 relative overflow-hidden">
+    <!-- Background pattern using the provided logo -->
+    <div class="bg-pattern"></div>
 
-  <header class="header">
-    <h1 class="text-3xl font-bold mb-2">Urhobo-English Dictionary</h1>
-    <p class="text-lg font-medium">Preserving and Sharing My Urhobo Heritage</p>
-  </header>
+    <div class="container mx-auto p-4 md:p-8 relative z-10">
 
-  <div class="main-container p-4">
-    <div class="search-container">
-      <input type="text" id="searchInput" placeholder="Search Urhobo or English word..."
-             class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#02a95c]"
-             aria-label="Search dictionary" autocomplete="off">
-      <div id="suggestions-list" class="hidden" role="listbox"></div>
-    </div>
+        <!-- Header Section -->
+        <header class="text-center mb-8 bg-[#02a95c] text-white p-6 rounded-lg shadow-lg">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-2">Urhobo-English Dictionary</h1>
+            <p class="text-xl md:text-2xl font-light italic">"Preserving and Sharing My Urhobo Heritage"</p>
+        </header>
 
-    <div id="entryDisplay" class="entry-display" role="region" aria-live="polite">
-      <h2 id="entryUrhobo" class="text-3xl font-bold text-[#02a95c] mb-2"></h2>
-      <p id="entryPOS" class="text-gray-600 mb-4"></p>
+        <!-- Action Buttons Section -->
+        <nav class="flex flex-wrap justify-center gap-4 mb-8">
+            <a href="https://flutterwave.com/donate/gmdq9wcmzuf7" target="_blank" class="flex items-center bg-[#8c6c43] hover:bg-[#a6865c] text-white font-semibold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                <span class="mr-2 text-xl">💝</span> Support This Project
+            </a>
+            <a href="mailto:urhoboheritage23@gmail.com" class="flex items-center bg-[#51701f] hover:bg-[#6b912b] text-white font-semibold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                <span class="mr-2 text-xl">📝</span> Submit Feedback
+            </a>
+            <a href="https://www.choglobal.com.ng/ca/uh" target="_blank" class="flex items-center bg-[#02a95c] hover:bg-[#03c06e] text-white font-semibold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                <span class="mr-2 text-xl">📝</span> Book an Urhobo Language Class
+            </a>
+        </nav>
 
-      <div class="mb-4">
-        <h3 class="text-xl font-semibold mb-2">Translation:</h3>
-        <p id="entryTranslation" class="text-lg"></p>
-      </div>
-
-      <div id="audioSection" class="mb-4 flex flex-wrap gap-4 items-center"></div>
-
-      <div id="illustrationSection" class="mb-4"></div>
-
-      <div id="examplesSection">
-        <h3 class="text-xl font-semibold mb-2">Examples:</h3>
-        <div id="example1" class="mb-2"></div>
-        <div id="example2"></div>
-      </div>
-
-      <div class="mt-6 pt-4 border-t border-gray-200">
-        <h3 class="text-xl font-semibold mb-2">Rate this Entry:</h3>
-        <div id="ratingStars" class="star-rating" role="radiogroup" aria-label="Rate entry from 1 to 5 stars">
-          <span class="star" data-value="1" role="radio" aria-checked="false" tabindex="0">★</span>
-          <span class="star" data-value="2" role="radio" aria-checked="false" tabindex="-1">★</span>
-          <span class="star" data-value="3" role="radio" aria-checked="false" tabindex="-1">★</span>
-          <span class="star" data-value="4" role="radio" aria-checked="false" tabindex="-1">★</span>
-          <span class="star" data-value="5" role="radio" aria-checked="false" tabindex="-1">★</span>
+        <!-- Search Bar Section -->
+        <div class="mb-8 p-4 bg-white rounded-lg shadow-md">
+            <input type="text" id="searchInput" placeholder="Search Urhobo or English words..." class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#02a95c] transition duration-200">
         </div>
-        <p id="currentRating" class="text-sm text-gray-500 mt-2">Current Average Rating: <span id="avgRatingValue">N/A</span></p>
-      </div>
+
+        <!-- Dictionary Results Container -->
+        <div id="resultsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dictionary entries will be dynamically injected here by JavaScript -->
+        </div>
+
+        <!-- No Results Message (initially hidden) -->
+        <div id="noResults" class="hidden text-center text-gray-600 text-lg my-8 p-6 bg-white rounded-lg shadow-md">
+            <p>No results found for your search. Please try a different word.</p>
+        </div>
+
+        <!-- Footer Section -->
+        <footer class="mt-12 p-8 bg-[#8c6c43] text-white rounded-lg shadow-lg">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm md:text-base">
+                <div>
+                    <h3 class="font-bold text-xl mb-3 border-b-2 border-white pb-2">About This Dictionary</h3>
+                    <p class="mb-2">Produced by: Urhobo Heritage</p>
+                    <p class="mb-2">Lead Contributor & Editor-in-Chief: Abednego Oghenechovwiere Omashone</p>
+                    <p class="text-xs md:text-sm italic">All materials in this dictionary are the intellectual properties of Abednego Oghenechovwiere Omashone. No part of it may be reproduced, repurposed or transmitted in another medium without written permission.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl mb-3 border-b-2 border-white pb-2">Contact & Inquiries</h3>
+                    <p class="mb-2">Email: <a href="mailto:urhoboheritage23@gmail.com" class="text-white hover:underline">urhoboheritage23@gmail.com</a> | <a href="mailto:choglobalconcepts@gmail.com" class="text-white hover:underline">choglobalconcepts@gmail.com</a></p>
+                    <p class="mb-2">Phone/WhatsApp: +234 703 198 3620</p>
+                    <p class="text-xs md:text-sm italic">This project came to you at no cost. A voluntary donation for its sustenance and enlargement is highly appreciated.</p>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <div class="button-group px-4 pb-8">
-      <a href="https://flutterwave.com/donate/gmdq9wcmzuf7" target="_blank" class="action-button" aria-label="Support the project">
-        💝 Support This Project
-      </a>
-      <a href="mailto:urhoboheritage23@gmail.com" class="action-button" aria-label="Submit feedback">
-        📝 Submit Feedback
-      </a>
-      <a href="https://www.choglobal.com.ng/ca/uh" target="_blank" class="action-button" aria-label="Book an Urhobo language class">
-        📝 Book an Urhobo Language Class
-      </a>
-    </div>
-  </div>
-
-  <footer class="footer">
-    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-      <div class="footer-section">
-        <h3 class="text-xl">About This Dictionary</h3>
-        <p>Produced by: Urhobo Heritage</p>
-        <p>Lead Contributor & Editor-in-Chief: Abednego Oghenechovwiere Omashone</p>
-        <p>All materials in this dictionary are the intellectual properties of Abednego Oghenechovwiere Omashone. No part of it may be reproduced, repurposed, or transmitted in another medium without written permission.</p>
-      </div>
-      <div class="footer-section">
-        <h3 class="text-xl">Contact & Inquiries</h3>
-        <p>Email: <a href="mailto:urhoboheritage23@gmail.com">urhoboheritage23@gmail.com</a> | <a href="mailto:choglobalconcepts@gmail.com">choglobalconcepts@gmail.com</a></p>
-        <p>Phone/WhatsApp: +234 703 198 3620</p>
-        <p>This project is free. Voluntary donations for its sustenance and expansion are appreciated.</p>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    const APPS_SCRIPT_WEB_APP_URL = https://script.google.com/macros/s/AKfycbz6Uj5S3DeaGAKNfKb0JzHhSJLBWIh9mH62p7MPvsLwZ1wIQw8R0Ql-l-oCo-LwMhq6cg/exec; // Paste your copied URL here
-    let sessionStartTime = Date.now();
-    let currentEntryUbiota = '';
-
-    function showMessageBox(message) {
-      const messageBoxText = document.getElementById('messageBoxText');
-      messageBoxText.textContent = message;
-      document.getElementById('messageBox').style.display = 'block';
-    }
-
-    async function sendRequest(action, params = {}, method = 'GET', body = null) {
-      const url = new URL(APPS_SCRIPT_WEB_APP_URL);
-      url.searchParams.append('action', action);
-
-      if (method === 'GET' && params) {
-        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-      }
-
-      const options = {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
-
-      if (method === 'POST' && body) {
-        options.body = JSON.stringify(body);
-      } else if (method === 'POST' && params) { // If POST but using URL params for simplicity
-        const formData = new URLSearchParams();
-        Object.keys(params).forEach(key => formData.append(key, params[key]));
-        options.body = formData.toString();
-        options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-      }
-
-      try {
-        const response = await fetch(url.toString(), options);
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-        }
-        return await response.json();
-      } catch (error) {
-        console.error('Fetch error:', error);
-        showMessageBox('Network error or server issue: ' + error.message);
-        throw error; // Re-throw to be caught by the specific caller's .catch()
-      }
-    }
-
-    async function logInteraction(feature, details, status = 'Success', searchQuery = '') {
-      const sessionDuration = Math.floor((Date.now() - sessionStartTime) / 1000);
-      const userAgent = navigator.userAgent;
-
-      const interactionData = {
-        search_query: searchQuery,
-        feature: feature,
-        details: details,
-        session_duration: sessionDuration,
-        status: status,
-        user_agent: userAgent
-      };
-
-      try {
-        await sendRequest('logInteraction', {}, 'POST', interactionData);
-      } catch (error) {
-        console.error('Failed to log interaction:', error);
-      }
-    }
-
-    window.onload = function() {
-      sessionStartTime = Date.now();
-      logInteraction('Page Load', 'Dictionary app loaded');
-    };
-
-    const searchInput = document.getElementById('searchInput');
-    const suggestionsList = document.getElementById('suggestions-list');
-    const entryDisplay = document.getElementById('entryDisplay');
-
-    searchInput.addEventListener('input', async function() {
-      const query = this.value.trim();
-      if (query.length > 1) {
-        try {
-          const suggestions = await sendRequest('getSuggestions', { query: query });
-          displaySuggestions(suggestions);
-        } catch (error) {
-          console.error('Error getting suggestions:', error);
-        }
-      } else {
-        suggestionsList.innerHTML = '';
-        suggestionsList.classList.add('hidden');
-      }
-    });
-
-    function displaySuggestions(suggestions) {
-      suggestionsList.innerHTML = '';
-      if (suggestions.length > 0) {
-        suggestions.forEach((suggestion, index) => {
-          const div = document.createElement('div');
-          div.textContent = suggestion;
-          div.setAttribute('role', 'option');
-          div.setAttribute('aria-selected', 'false');
-          div.tabIndex = 0;
-          div.addEventListener('click', function() {
-            searchInput.value = suggestion;
-            searchEntry(suggestion);
-            suggestionsList.classList.add('hidden');
-            logInteraction('Suggestion Click', 'Selected: ' + suggestion, 'Success', suggestion);
-          });
-          div.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter' || event.key === ' ') {
-              searchInput.value = suggestion;
-              searchEntry(suggestion);
-              suggestionsList.classList.add('hidden');
-              logInteraction('Suggestion Click', 'Selected: ' + suggestion, 'Success', suggestion);
+    <script>
+        // Dictionary data (simulated from 'Urhobo Dictionary Project1.xlsx - Dictionary.csv').
+        // In a live GitHub Pages deployment, you would typically fetch this CSV file
+        // dynamically using JavaScript's `fetch` API and parse it (e.g., using Papa Parse library).
+        // For demonstration, a small sample of the data is hardcoded here.
+        const dictionaryData = [
+            {
+                "UBIOTA": "Abaka",
+                "POS": "N",
+                "UBIOTA AUDIO": "https://archive.org/download/Abaka/Abaka%20.mp3",
+                "TRANSLATION": "Grasshopper (n)",
+                "ILLUSTRATION": "https://ia601002.us.archive.org/33/items/afioto-re-oyibo-rabbit/Abaka%20-%20grasshopper.png",
+                "UDJE 1": "Abaka riẹ ẹbe rẹ enẹ mẹ na.",
+                "UDJE 1 AUDIO": "https://archive.org/download/aberen-s-2/abaka%20s1.aac",
+                "EXAMPLE 1": "Grashopper ate my yam's leaves.",
+                "UDJE 2": "Ya jẹ abaka na vwo; wo hwe-e.",
+                "UDJE 2 AUDIO": "https://archive.org/download/aberen-s-2/abaka%20s2.aac",
+                "EXAMPLE 2": "Leave the grahopper alone; do not kill it.",
+                "Total_Rating_Sum": 10, // Sum of all ratings given so far
+                "Rating_Count": 2     // Number of ratings received
+            },
+            {
+                "UBIOTA": "Abamwa",
+                "POS": "N",
+                "UBIOTA AUDIO": "https://archive.org/download/aberen-s-2/abamwa%20.aac",
+                "TRANSLATION": "rag, piece of cloth, torn piece of cloth",
+                "ILLUSTRATION": "https://dn721805.ca.archive.org/0/items/afioto-re-oyibo-rabbit/abamwa.jpeg",
+                "UDJE 1": "Abamwa yẹ oku phiyọ rhe etinẹ.",
+                "UDJE 1 AUDIO": "https://archive.org/download/aberen-s-2/abamwa%20s1.aac",
+                "EXAMPLE 1": "The rag fell into the pot.",
+                "UDJE 2": "Vwo obamwa ro rhiẹ vwe ogba.",
+                "UDJE 2 AUDIO": "https://archive.org/download/aberen-s-2/abamwa%20s2.aac",
+                "EXAMPLE 2": "Take the rag that fell into the well.",
+                "Total_Rating_Sum": 15,
+                "Rating_Count": 3
+            },
+            {
+                "UBIOTA": "Abarikpọ",
+                "POS": "V",
+                "UBIOTA AUDIO": "https://archive.org/download/aberen-s-2/Abarikpo.aac",
+                "TRANSLATION": "to embrace",
+                "ILLUSTRATION": "https://ia903407.us.archive.org/1/items/abere-okoko/abarikpo.jpeg",
+                "UDJE 1": "Obo n’o vwo abaripo omotete na.",
+                "UDJE 1 AUDIO": "https://archive.org/download/aberen-s-2/abarikpo%20s1.aac",
+                "EXAMPLE 1": "How he embraced the child.",
+                "UDJE 2": "Dia r’obaripo omote na.",
+                "UDJE 2 AUDIO": "https://archive.org/download/aberen-s-2/abarikpo%20s2.aac",
+                "EXAMPLE 2": "Come and embrace the girl.",
+                "Total_Rating_Sum": 20,
+                "Rating_Count": 4
+            },
+            {
+                "UBIOTA": "Afia",
+                "POS": "N",
+                "UBIOTA AUDIO": "https://archive.org/download/Afia/Afia%20.mp3",
+                "TRANSLATION": "White chalk (n)",
+                "ILLUSTRATION": "https://ia800902.us.archive.org/21/items/urhobo-dictionary-illustration-3/Afia%20-%20White%20chalk.png",
+                "UDJE 1": "Afia ke vwo fi urhobo.",
+                "UDJE 1 AUDIO": "https://archive.org/download/aberen-s-2/afia%20s1.aac",
+                "EXAMPLE 1": "The Urhobo people use white chalk.",
+                "UDJE 2": "Afia r’o vwo kpotọ na.",
+                "UDJE 2 AUDIO": "https://archive.org/download/aberen-s-2/afia%20s2.aac",
+                "EXAMPLE 2": "The white chalk that fell on the ground.",
+                "Total_Rating_Sum": 25,
+                "Rating_Count": 5
+            },
+            {
+                "UBIOTA": "Ejeba",
+                "POS": "N",
+                "UBIOTA AUDIO": "https://archive.org/download/Ejeba/Ejeba%20.mp3",
+                "TRANSLATION": "Chewing stick",
+                "ILLUSTRATION": "https://ia600902.us.archive.org/21/items/urhobo-dictionary-illustration-3/Ejeba%20-%20Chewing%20stick.png",
+                "UDJE 1": "Ejeba mẹ na vw'ọfọn.",
+                "UDJE 1 AUDIO": "https://archive.org/download/aberen-s-2/ejeba%20s1.aac",
+                "EXAMPLE 1": "My chewing stick is good.",
+                "UDJE 2": "Wo gba vw'ejeba na.",
+                "UDJE 2 AUDIO": "https://archive.org/download/aberen-s-2/ejeba%20s2.aac",
+                "EXAMPLE 2": "Don't use this chewing stick.",
+                "Total_Rating_Sum": 18,
+                "Rating_Count": 4
             }
-          });
-          suggestionsList.appendChild(div);
-        });
-        suggestionsList.classList.remove('hidden');
-        // Optionally focus the first suggestion:
-        // suggestionsList.querySelector('div').focus();
-      } else {
-        suggestionsList.classList.add('hidden');
-      }
-    }
-
-    document.addEventListener('click', function(event) {
-      if (!searchInput.contains(event.target) && !suggestionsList.contains(event.target)) {
-        suggestionsList.classList.add('hidden');
-      }
-    });
-
-    searchInput.addEventListener('keydown', function(event) {
-      if (event.key === 'Enter') {
-        const query = this.value.trim();
-        if (query) {
-          searchEntry(query);
-          suggestionsList.classList.add('hidden');
-        }
-      }
-    });
-
-    async function searchEntry(query) {
-      logInteraction('Search', 'Searching for: ' + query, 'Initiated', query);
-      try {
-        const entry = await sendRequest('searchDictionary', { query: query });
-        displayEntry(entry, query);
-      } catch (error) {
-        console.error('Error searching entry:', error);
-        entryDisplay.style.display = 'none';
-        showMessageBox(`Failed to retrieve entry for "${query}".`);
-        logInteraction('Search', `Failed to retrieve entry for: ${query}`, 'Failed', query);
-      }
-    }
-
-    function displayEntry(entry, query) {
-      if (entry) {
-        currentEntryUbiota = entry.ubiota;
-        document.getElementById('entryUrhobo').textContent = entry.ubiota;
-        document.getElementById('entryPOS').textContent = entry.pos ? `(${entry.pos})` : '';
-        document.getElementById('entryTranslation').textContent = entry.translation;
-
-        const audioSection = document.getElementById('audioSection');
-        audioSection.innerHTML = '';
-
-        const audioFields = [
-          { label: 'Ubiota Audio', url: entry.ubiotaAudio },
-          { label: 'Udje 1 Audio', url: entry.udje1Audio },
-          { label: 'Udje 2 Audio', url: entry.udje2Audio }
         ];
 
-        audioFields.forEach(field => {
-          if (field.url) {
-            const button = document.createElement('button');
-            button.className = 'audio-button';
-            button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                                    <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
-                                  </svg>
-                                  <span>${field.label}</span>`;
-            button.setAttribute('aria-label', `Play ${field.label} for ${entry.ubiota}`);
-            button.onclick = () => {
-              const audio = new Audio(field.url);
-              audio.play().catch(e => {
-                showMessageBox('Could not play audio. Please check the audio source.');
-                logInteraction('Audio Play Error', `Failed to play ${field.label} for ${entry.ubiota}`, 'Failed', entry.ubiota);
-              });
-              logInteraction('Audio Play', `Playing ${field.label} for ${entry.ubiota}`, 'Success', entry.ubiota);
+        // Get references to DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const noResultsMessage = document.getElementById('noResults');
+        let sessionStartTime = Date.now(); // Records the start time of the user's session
+
+        /**
+         * Generates a formatted timestamp string (YYYY-MM-DD HH:MM:SS).
+         * @returns {string} The formatted timestamp.
+         */
+        function getTimestamp() {
+            const now = new Date();
+            const pad = (num) => num.toString().padStart(2, '0'); // Helper to add leading zero
+            return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+        }
+
+        /**
+         * Logs user interactions to the console.
+         * IMPORTANT: For actual persistence to a Google Sheet (as requested),
+         * this function would need to send data to a backend service (e.g., Google Apps Script,
+         * Firebase Functions, or a custom server) which can then write to the sheet.
+         * Client-side JavaScript on GitHub Pages cannot directly write to Google Drive files.
+         *
+         * @param {string} feature - The type of feature interacted with (e.g., "Search", "Audio Play", "Rate Entry").
+         * @param {string} details - Specific details about the interaction.
+         * @param {string} searchQuery - The current search query, if applicable.
+         * @param {string} status - The status of the interaction (e.g., "Success", "Failed", "No Results").
+         */
+        function logInteraction(feature, details, searchQuery = '', status = 'Success') {
+            const duration = Math.floor((Date.now() - sessionStartTime) / 1000); // Session duration in seconds
+            const userAgent = navigator.userAgent; // User's browser and OS information
+            const ipAddress = "Not Available Client-Side"; // IP address cannot be directly obtained from client-side JS for security/privacy reasons
+
+            const logEntry = {
+                Timestamp: getTimestamp(),
+                "Search Query": searchQuery,
+                Feature: feature,
+                Details: details,
+                "Session Duration": duration,
+                Status: status,
+                "User Agent": userAgent,
+                "IP Address": ipAddress
             };
-            audioSection.appendChild(button);
-          }
-        });
-
-        const illustrationSection = document.getElementById('illustrationSection');
-        illustrationSection.innerHTML = '';
-        if (entry.illustration) {
-          const img = document.createElement('img');
-          img.src = entry.illustration;
-          img.alt = `Illustration for ${entry.ubiota}`;
-          img.className = 'illustration-img';
-          img.onerror = () => {
-            img.src = 'https://placehold.co/300x200/cccccc/333333?text=No+Image';
-            logInteraction('Image Load Error', `Failed to load illustration for ${entry.ubiota}`, 'Failed', entry.ubiota);
-          };
-          illustrationSection.appendChild(img);
+            console.log("Interaction Log:", logEntry); // Log to console for demonstration
+            // In a production environment with a backend, you would typically use:
+            // fetch('/api/log-interaction', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(logEntry)
+            // });
         }
 
-        document.getElementById('example1').innerHTML = entry.udje1 ? `<p class="font-semibold">Example 1:</p><p>${entry.udje1}</p>` : '';
-        if (entry.example1) {
-          document.getElementById('example1').innerHTML += `<p class="text-sm text-gray-600">${entry.example1}</p>`;
-        }
+        /**
+         * Renders the dictionary entries into the results container based on the provided array.
+         * Creates HTML cards for each entry, including audio players and rating stars.
+         * @param {Array} entries - The array of dictionary entry objects to render.
+         */
+        function renderResults(entries) {
+            resultsContainer.innerHTML = ''; // Clear previous results before rendering new ones
 
-        document.getElementById('example2').innerHTML = entry.udje2 ? `<p class="font-semibold">Example 2:</p><p>${entry.udje2}</p>` : '';
-        if (entry.example2) {
-          document.getElementById('example2').innerHTML += `<p class="text-sm text-gray-600">${entry.example2}</p>`;
-        }
-
-        updateStarDisplay(entry.rateEntry);
-        document.getElementById('avgRatingValue').textContent = entry.rateEntry.toFixed(2);
-        entryDisplay.style.display = 'block';
-        logInteraction('Search', 'Entry displayed for: ' + entry.ubiota, 'Success', entry.ubiota);
-      } else {
-        entryDisplay.style.display = 'none';
-        showMessageBox(`No entry found for "${query}". Please try another word.`);
-        logInteraction('Search', `No entry found for: ${query}`, 'Failed', query);
-      }
-    }
-
-    const ratingStars = document.getElementById('ratingStars');
-    const stars = ratingStars.querySelectorAll('.star');
-
-    stars.forEach(star => {
-      star.addEventListener('mouseover', function() {
-        const value = parseInt(this.dataset.value);
-        stars.forEach((s, index) => {
-          s.classList.toggle('hovered', index < value);
-        });
-      });
-      star.addEventListener('mouseout', function() {
-        stars.forEach(s => s.classList.remove('hovered'));
-      });
-      star.addEventListener('click', async function() {
-        if (currentEntryUbiota) {
-          const rating = parseInt(this.dataset.value);
-          logInteraction('Rate Entry', `User rated ${currentEntryUbiota} with ${rating} stars`, 'Initiated', currentEntryUbiota);
-          try {
-            const result = await sendRequest('updateRating', { ubiota: currentEntryUbiota, rating: rating }, 'POST');
-            const newAvgRating = result.newAverage; // Assuming your Apps Script returns this
-            updateStarDisplay(newAvgRating);
-            document.getElementById('avgRatingValue').textContent = newAvgRating.toFixed(2);
-            showMessageBox(`Thank you for your rating! New average: ${newAvgRating.toFixed(2)}`);
-            logInteraction('Rate Entry', `Rating updated for ${currentEntryUbiota} to ${newAvgRating.toFixed(2)}`, 'Success', currentEntryUbiota);
-          } catch (error) {
-            console.error('Error updating rating:', error);
-            showMessageBox('Failed to update rating. Please try again.');
-            logInteraction('Rate Entry', `Failed to update rating for ${currentEntryUbiota}`, 'Failed', currentEntryUbiota);
-          }
-        }
-      });
-      star.addEventListener('keydown', async function(event) {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          if (currentEntryUbiota) {
-            const rating = parseInt(this.dataset.value);
-            logInteraction('Rate Entry', `User rated ${currentEntryUbiota} with ${rating} stars`, 'Initiated', currentEntryUbiota);
-            try {
-              const result = await sendRequest('updateRating', { ubiota: currentEntryUbiota, rating: rating }, 'POST');
-              const newAvgRating = result.newAverage;
-              updateStarDisplay(newAvgRating);
-              document.getElementById('avgRatingValue').textContent = newAvgRating.toFixed(2);
-              showMessageBox(`Thank you for your rating! New average: ${newAvgRating.toFixed(2)}`);
-              logInteraction('Rate Entry', `Rating updated for ${currentEntryUbiota} to ${newAvgRating.toFixed(2)}`, 'Success', currentEntryUbiota);
-            } catch (error) {
-              console.error('Error updating rating:', error);
-              showMessageBox('Failed to update rating. Please try again.');
-              logInteraction('Rate Entry', `Failed to update rating for ${currentEntryUbiota}`, 'Failed', currentEntryUbiota);
+            // Show/hide no results message based on search outcome
+            if (entries.length === 0) {
+                noResultsMessage.classList.remove('hidden');
+                return; // Exit if no entries to render
+            } else {
+                noResultsMessage.classList.add('hidden');
             }
-          }
-        }
-      });
-    });
 
-    function updateStarDisplay(averageRating) {
-      stars.forEach((star, index) => {
-        star.classList.toggle('selected', index < Math.round(averageRating));
-        star.setAttribute('aria-checked', index < Math.round(averageRating) ? 'true' : 'false');
-      });
-    }
-  </script>
+            entries.forEach(entry => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 relative';
+
+                // Construct the HTML for each dictionary entry card
+                card.innerHTML = `
+                    <h2 class="text-2xl font-bold text-[#02a95c] mb-2">${entry.UBIOTA} <span class="text-sm font-normal text-gray-500 ml-2">(${entry.POS || 'N/A'})</span></h2>
+                    <p class="text-gray-700 mb-3"><span class="font-semibold">Translation:</span> ${entry.TRANSLATION}</p>
+
+                    ${entry.ILLUSTRATION ? `
+                        <div class="mb-4 text-center">
+                            <img src="${entry.ILLUSTRATION}" alt="${entry.UBIOTA} illustration" class="max-w-full h-auto rounded-md shadow-sm mx-auto"
+                                 onerror="this.onerror=null;this.src='https://placehold.co/200x150/e0e0e0/555555?text=No+Image';">
+                        </div>` : ''}
+
+                    <!-- Ubiota Audio Player -->
+                    ${entry['UBIOTA AUDIO'] ? `
+                        <div class="mb-3">
+                            <span class="font-semibold text-gray-700">Ubiota Audio:</span>
+                            <audio controls controlsList="nodownload" class="w-full mt-1" onplay="logInteraction('Audio Play', 'Playing Ubiota Audio for ${entry.UBIOTA}', searchInput.value)">
+                                <source src="${entry['UBIOTA AUDIO']}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    ` : ''}
+                    ${entry['UDJE 1'] ? `<p class="text-gray-700 text-sm italic mb-2"><span class="font-semibold">Udje 1:</span> "${entry['UDJE 1']}"</p>` : ''}
+                    <!-- Udje 1 Audio Player -->
+                    ${entry['UDJE 1 AUDIO'] ? `
+                        <div class="mb-3">
+                            <span class="font-semibold text-gray-700">Udje 1 Audio:</span>
+                            <audio controls controlsList="nodownload" class="w-full mt-1" onplay="logInteraction('Audio Play', 'Playing Udje 1 Audio for ${entry.UBIOTA}', searchInput.value)">
+                                <source src="${entry['UDJE 1 AUDIO']}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    ` : ''}
+                    ${entry['EXAMPLE 1'] ? `<p class="text-gray-600 text-sm mb-3"><span class="font-semibold">Example 1:</span> ${entry['EXAMPLE 1']}</p>` : ''}
+                    ${entry['UDJE 2'] ? `<p class="text-gray-700 text-sm italic mb-2"><span class="font-semibold">Udje 2:</span> "${entry['UDJE 2']}"</p>` : ''}
+                    <!-- Udje 2 Audio Player -->
+                    ${entry['UDJE 2 AUDIO'] ? `
+                        <div class="mb-3">
+                            <span class="font-semibold text-gray-700">Udje 2 Audio:</span>
+                            <audio controls controlsList="nodownload" class="w-full mt-1" onplay="logInteraction('Audio Play', 'Playing Udje 2 Audio for ${entry.UBIOTA}', searchInput.value)">
+                                <source src="${entry['UDJE 2 AUDIO']}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    ` : ''}
+                    ${entry['EXAMPLE 2'] ? `<p class="text-gray-600 text-sm mb-4"><span class="font-semibold">Example 2:</span> ${entry['EXAMPLE 2']}</p>` : ''}
+
+                    <!-- Rating Feature -->
+                    <div class="mt-4 border-t pt-4 border-gray-200">
+                        <p class="font-semibold text-gray-700 mb-2">Rate this entry:</p>
+                        <div class="flex items-center space-x-1" data-ubiota="${entry.UBIOTA}">
+                            ${Array(5).fill().map((_, i) => `
+                                <i class="fa-solid fa-star text-gray-300 text-xl cursor-pointer hover:text-yellow-400" data-rating="${i + 1}"></i>
+                            `).join('')}
+                            <span class="ml-2 text-gray-600 text-sm">(<span class="current-rating"></span> average)</span>
+                        </div>
+                    </div>
+                `;
+                resultsContainer.appendChild(card);
+
+                // Add event listeners and update visuals for the rating stars
+                const ratingContainer = card.querySelector(`.flex[data-ubiota="${entry.UBIOTA}"]`);
+                if (ratingContainer) {
+                    const stars = ratingContainer.querySelectorAll('.fa-star');
+                    const currentRatingSpan = ratingContainer.querySelector('.current-rating');
+
+                    /**
+                     * Updates the visual appearance of the stars based on the average rating.
+                     * @param {number} avgRating - The calculated average rating.
+                     */
+                    const updateStarVisuals = (avgRating) => {
+                        stars.forEach((star, index) => {
+                            if (index < Math.round(avgRating)) { // Round to nearest whole star for visual
+                                star.classList.remove('text-gray-300');
+                                star.classList.add('text-yellow-400');
+                            } else {
+                                star.classList.remove('text-yellow-400');
+                                star.classList.add('text-gray-300');
+                            }
+                        });
+                        currentRatingSpan.textContent = avgRating.toFixed(1); // Display average with one decimal
+                    };
+
+                    // Calculate and display the initial average rating for the entry
+                    const initialAvgRating = entry.Rating_Count > 0 ? entry.Total_Rating_Sum / entry.Rating_Count : 0;
+                    updateStarVisuals(initialAvgRating);
+
+                    // Add click event listener to each star for rating
+                    stars.forEach(star => {
+                        star.addEventListener('click', function() {
+                            const newRating = parseInt(this.dataset.rating); // Get the selected rating (1-5)
+
+                            // Find the corresponding entry in the dictionaryData array and update its ratings
+                            const targetEntry = dictionaryData.find(d => d.UBIOTA === entry.UBIOTA);
+                            if (targetEntry) {
+                                targetEntry.Total_Rating_Sum += newRating; // Add the new rating to the sum
+                                targetEntry.Rating_Count += 1;     // Increment the count of ratings
+                                // Recalculate the updated average rating
+                                const updatedAvgRating = targetEntry.Rating_Count > 0 ? targetEntry.Total_Rating_Sum / targetEntry.Rating_Count : 0;
+                                updateStarVisuals(updatedAvgRating); // Update the visual stars immediately
+
+                                // Log the rating interaction
+                                logInteraction('Rate Entry', `Rated "${entry.UBIOTA}" ${newRating} stars. New average: ${updatedAvgRating.toFixed(1)}`, searchInput.value);
+                            }
+                        });
+                    });
+                }
+            });
+        }
+
+        // Event listener for the search input field
+        searchInput.addEventListener('input', (event) => {
+            const query = event.target.value.toLowerCase().trim(); // Get and sanitize the search query
+            // Filter dictionary entries based on matching Urhobo word, translation, or examples
+            const filteredEntries = dictionaryData.filter(entry =>
+                entry.UBIOTA.toLowerCase().includes(query) ||
+                entry.TRANSLATION.toLowerCase().includes(query) ||
+                (entry['EXAMPLE 1'] && entry['EXAMPLE 1'].toLowerCase().includes(query)) ||
+                (entry['EXAMPLE 2'] && entry['EXAMPLE 2'].toLowerCase().includes(query))
+            );
+            renderResults(filteredEntries); // Render the filtered results
+            // Log the search interaction
+            logInteraction('Search', `Searching for: ${query}`, query, filteredEntries.length > 0 ? 'Success' : 'No Results');
+        });
+
+        // Initial render of all dictionary entries when the DOM content is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            renderResults(dictionaryData); // Display all entries initially
+            logInteraction('Page Load', 'Dictionary app loaded'); // Log the initial page load
+        });
+
+        // Add a listener for beforeunload to log when the user leaves the page.
+        // Note: This is not always reliable, especially on quick tab closes.
+        window.addEventListener('beforeunload', () => {
+            logInteraction('Session End', 'User left the page');
+        });
+    </script>
 </body>
 </html>

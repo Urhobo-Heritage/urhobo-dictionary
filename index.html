@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Google Fonts - Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Papa Parse CDN for CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
         /* Apply Inter font and a fallback */
         body {
@@ -86,6 +88,11 @@
             <input type="text" id="searchInput" placeholder="Search Urhobo or English words..." class="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#02a95c] transition duration-200">
         </div>
 
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="text-center text-gray-600 text-lg my-8 p-6 bg-white rounded-lg shadow-md">
+            <p>Loading dictionary data...</p>
+        </div>
+
         <!-- Dictionary Results Container -->
         <div id="resultsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Dictionary entries will be dynamically injected here by JavaScript -->
@@ -116,92 +123,15 @@
     </div>
 
     <script>
-        // Dictionary data (simulated from 'Urhobo Dictionary Project1.xlsx - Dictionary.csv').
-        // In a live GitHub Pages deployment, you would typically fetch this CSV file
-        // dynamically using JavaScript's `fetch` API and parse it (e.g., using Papa Parse library).
-        // For demonstration, a small sample of the data is hardcoded here.
-        const dictionaryData = [
-            {
-                "UBIOTA": "Abaka",
-                "POS": "N",
-                "UBIOTA AUDIO": "https://archive.org/download/Abaka/Abaka%20.mp3",
-                "TRANSLATION": "Grasshopper (n)",
-                "ILLUSTRATION": "https://ia601002.us.archive.org/33/items/afioto-re-oyibo-rabbit/Abaka%20-%20grasshopper.png",
-                "UDJE 1": "Abaka riẹ ẹbe rẹ enẹ mẹ na.",
-                "UDJE 1 AUDIO": "https://archive.org/download/aberen-s-2/abaka%20s1.aac",
-                "EXAMPLE 1": "Grashopper ate my yam's leaves.",
-                "UDJE 2": "Ya jẹ abaka na vwo; wo hwe-e.",
-                "UDJE 2 AUDIO": "https://archive.org/download/aberen-s-2/abaka%20s2.aac",
-                "EXAMPLE 2": "Leave the grahopper alone; do not kill it.",
-                "Total_Rating_Sum": 10, // Sum of all ratings given so far
-                "Rating_Count": 2     // Number of ratings received
-            },
-            {
-                "UBIOTA": "Abamwa",
-                "POS": "N",
-                "UBIOTA AUDIO": "https://archive.org/download/aberen-s-2/abamwa%20.aac",
-                "TRANSLATION": "rag, piece of cloth, torn piece of cloth",
-                "ILLUSTRATION": "https://dn721805.ca.archive.org/0/items/afioto-re-oyibo-rabbit/abamwa.jpeg",
-                "UDJE 1": "Abamwa yẹ oku phiyọ rhe etinẹ.",
-                "UDJE 1 AUDIO": "https://archive.org/download/aberen-s-2/abamwa%20s1.aac",
-                "EXAMPLE 1": "The rag fell into the pot.",
-                "UDJE 2": "Vwo obamwa ro rhiẹ vwe ogba.",
-                "UDJE 2 AUDIO": "https://archive.org/download/aberen-s-2/abamwa%20s2.aac",
-                "EXAMPLE 2": "Take the rag that fell into the well.",
-                "Total_Rating_Sum": 15,
-                "Rating_Count": 3
-            },
-            {
-                "UBIOTA": "Abarikpọ",
-                "POS": "V",
-                "UBIOTA AUDIO": "https://archive.org/download/aberen-s-2/Abarikpo.aac",
-                "TRANSLATION": "to embrace",
-                "ILLUSTRATION": "https://ia903407.us.archive.org/1/items/abere-okoko/abarikpo.jpeg",
-                "UDJE 1": "Obo n’o vwo abaripo omotete na.",
-                "UDJE 1 AUDIO": "https://archive.org/download/aberen-s-2/abarikpo%20s1.aac",
-                "EXAMPLE 1": "How he embraced the child.",
-                "UDJE 2": "Dia r’obaripo omote na.",
-                "UDJE 2 AUDIO": "https://archive.org/download/aberen-s-2/abarikpo%20s2.aac",
-                "EXAMPLE 2": "Come and embrace the girl.",
-                "Total_Rating_Sum": 20,
-                "Rating_Count": 4
-            },
-            {
-                "UBIOTA": "Afia",
-                "POS": "N",
-                "UBIOTA AUDIO": "https://archive.org/download/Afia/Afia%20.mp3",
-                "TRANSLATION": "White chalk (n)",
-                "ILLUSTRATION": "https://ia800902.us.archive.org/21/items/urhobo-dictionary-illustration-3/Afia%20-%20White%20chalk.png",
-                "UDJE 1": "Afia ke vwo fi urhobo.",
-                "UDJE 1 AUDIO": "https://archive.org/download/aberen-s-2/afia%20s1.aac",
-                "EXAMPLE 1": "The Urhobo people use white chalk.",
-                "UDJE 2": "Afia r’o vwo kpotọ na.",
-                "UDJE 2 AUDIO": "https://archive.org/download/aberen-s-2/afia%20s2.aac",
-                "EXAMPLE 2": "The white chalk that fell on the ground.",
-                "Total_Rating_Sum": 25,
-                "Rating_Count": 5
-            },
-            {
-                "UBIOTA": "Ejeba",
-                "POS": "N",
-                "UBIOTA AUDIO": "https://archive.org/download/Ejeba/Ejeba%20.mp3",
-                "TRANSLATION": "Chewing stick",
-                "ILLUSTRATION": "https://ia600902.us.archive.org/21/items/urhobo-dictionary-illustration-3/Ejeba%20-%20Chewing%20stick.png",
-                "UDJE 1": "Ejeba mẹ na vw'ọfọn.",
-                "UDJE 1 AUDIO": "https://archive.org/download/aberen-s-2/ejeba%20s1.aac",
-                "EXAMPLE 1": "My chewing stick is good.",
-                "UDJE 2": "Wo gba vw'ejeba na.",
-                "UDJE 2 AUDIO": "https://archive.org/download/aberen-s-2/ejeba%20s2.aac",
-                "EXAMPLE 2": "Don't use this chewing stick.",
-                "Total_Rating_Sum": 18,
-                "Rating_Count": 4
-            }
-        ];
+        // Placeholder for dictionary data - will be populated dynamically from CSV
+        let dictionaryData = [];
+        const CSV_FILE_URL = 'https://raw.githubusercontent.com/Urhobo-Heritage/urhobo-dictionary/refs/heads/main/Urhobo%20Dictionary%20Project1%20-%20Dictionary.csv'; // *** IMPORTANT: Replace with your actual raw GitHub CSV URL ***
 
         // Get references to DOM elements
         const searchInput = document.getElementById('searchInput');
         const resultsContainer = document.getElementById('resultsContainer');
         const noResultsMessage = document.getElementById('noResults');
+        const loadingIndicator = document.getElementById('loadingIndicator');
         let sessionStartTime = Date.now(); // Records the start time of the user's session
 
         /**
@@ -270,10 +200,14 @@
                 const card = document.createElement('div');
                 card.className = 'bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 relative';
 
+                // Ensure rating properties are numbers, defaulting if missing
+                entry.Total_Rating_Sum = parseFloat(entry.Total_Rating_Sum) || 0;
+                entry.Rating_Count = parseInt(entry.Rating_Count) || 0;
+
                 // Construct the HTML for each dictionary entry card
                 card.innerHTML = `
                     <h2 class="text-2xl font-bold text-[#02a95c] mb-2">${entry.UBIOTA} <span class="text-sm font-normal text-gray-500 ml-2">(${entry.POS || 'N/A'})</span></h2>
-                    <p class="text-gray-700 mb-3"><span class="font-semibold">Translation:</span> ${entry.TRANSLATION}</p>
+                    <p class="text-gray-700 mb-3"><span class="font-semibold">Translation:</span> ${entry.TRANSLATION || 'N/A'}</p>
 
                     ${entry.ILLUSTRATION ? `
                         <div class="mb-4 text-center">
@@ -379,13 +313,51 @@
             });
         }
 
+        /**
+         * Fetches and parses the CSV data from the specified URL.
+         */
+        async function fetchAndParseCSV() {
+            loadingIndicator.classList.remove('hidden'); // Show loading indicator
+            resultsContainer.innerHTML = ''; // Clear existing results
+
+            try {
+                const response = await fetch(https://raw.githubusercontent.com/Urhobo-Heritage/urhobo-dictionary/refs/heads/main/Urhobo%20Dictionary%20Project1%20-%20Dictionary.csv);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const csvText = await response.text();
+
+                Papa.parse(csvText, {
+                    header: true,      // Treat the first row as headers (column names)
+                    dynamicTyping: true, // Attempt to convert numbers and booleans
+                    skipEmptyLines: true, // Ignore empty rows
+                    complete: function(results) {
+                        // Filter out any rows where UBIOTA is empty or null, which might be blank rows from Excel
+                        dictionaryData = results.data.filter(row => row.UBIOTA && row.UBIOTA.trim() !== '');
+                        renderResults(dictionaryData); // Render results with the fetched data
+                        loadingIndicator.classList.add('hidden'); // Hide loading indicator
+                        logInteraction('Page Load', 'Dictionary app loaded and CSV data fetched', '', 'Success');
+                    },
+                    error: function(err) {
+                        console.error('Error parsing CSV:', err.message);
+                        loadingIndicator.textContent = 'Error loading dictionary data. Please try again later.';
+                        logInteraction('Data Load', `Error parsing CSV: ${err.message}`, '', 'Failed');
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching CSV:', error);
+                loadingIndicator.textContent = 'Error fetching dictionary data. Please check the URL or your internet connection.';
+                logInteraction('Data Load', `Error fetching CSV: ${error.message}`, '', 'Failed');
+            }
+        }
+
         // Event listener for the search input field
         searchInput.addEventListener('input', (event) => {
             const query = event.target.value.toLowerCase().trim(); // Get and sanitize the search query
             // Filter dictionary entries based on matching Urhobo word, translation, or examples
             const filteredEntries = dictionaryData.filter(entry =>
-                entry.UBIOTA.toLowerCase().includes(query) ||
-                entry.TRANSLATION.toLowerCase().includes(query) ||
+                entry.UBIOTA && entry.UBIOTA.toLowerCase().includes(query) ||
+                entry.TRANSLATION && entry.TRANSLATION.toLowerCase().includes(query) ||
                 (entry['EXAMPLE 1'] && entry['EXAMPLE 1'].toLowerCase().includes(query)) ||
                 (entry['EXAMPLE 2'] && entry['EXAMPLE 2'].toLowerCase().includes(query))
             );
@@ -394,10 +366,9 @@
             logInteraction('Search', `Searching for: ${query}`, query, filteredEntries.length > 0 ? 'Success' : 'No Results');
         });
 
-        // Initial render of all dictionary entries when the DOM content is fully loaded
+        // Initial fetch and render of all dictionary entries when the DOM content is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
-            renderResults(dictionaryData); // Display all entries initially
-            logInteraction('Page Load', 'Dictionary app loaded'); // Log the initial page load
+            fetchAndParseCSV(); // Fetch and parse the CSV data
         });
 
         // Add a listener for beforeunload to log when the user leaves the page.
